@@ -31,7 +31,10 @@ while (true) {
     for (const line of lines.slice(newLineStartIdx)) {
         if (line.includes("Starting minecraft server")) {
             serverStarted = true;
-        } else if (line.includes("Stopping server")) {
+        } else if (
+            line.includes("Server Shutdown") &&
+            line.includes("Stopping server")
+        ) {
             serverStoped = true;
         } else if (line.includes("joined the game")) {
             const name = line.match(/(?<=:\s).+?(?=\sjoined)/);
