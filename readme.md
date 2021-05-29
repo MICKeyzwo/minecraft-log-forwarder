@@ -23,9 +23,12 @@
 
 ```json
 {
-    "logFilePath": "マイクラのログファイル（latest.log）のパス",
-    "ModsDirPath": "modフォルダのパス（あれば）",
-    "webhookUrl": "通知を飛ばす先のwebhookのエンドポイント"
+    "logFilePath": "./logs",  // マイクラのログファイル（latest.log）のパス
+    "ModsDirPath": "./mods",  // modフォルダのパス（オプション）
+    "webhookUrl": "https://discord.com/api/webhooks/...",  // 通知を飛ばす先のwebhookのエンドポイント
+    "watchInterval": 1000, // ログファイルの確認感覚、ミリ秒単位、オプション）
+    "loginMessages": ["がログインしました"],  // ログイン時のメッセージにつける文言
+    "logoutMessages": ["がログアウトしました"]  // ログアウト時のメッセージにつける文言
 }
 ```
 
