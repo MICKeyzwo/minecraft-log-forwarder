@@ -1,7 +1,10 @@
 interface MinecraftLogWatcherOptions {
     logFilePath: string;
-    ModsDirPath: string;
+    ModsDirPath?: string;
     webhookUrl: string;
+    watchInterval?: number;
+    loginMessages: string[];
+    logoutMessages: string[];
 }
 
 interface WebhookContent {
@@ -51,10 +54,13 @@ while (true) {
     let contentText = "";
     if (serverStarted) {
         contentText += "マイクラ鯖が再起動しました！\n導入Mod一覧：\n";
-        const mods = await lsFiles(config.ModsDirPath);
-        if (mods.length) {
-            for (const mod of mods) {
-                contentText += `  ${mod}\n`;
+        if (config.ModsDirPath) {
+            contentText += "\n導入Mod一覧：\n";
+            const mods = await lsFiles(config.ModsDirPath);
+            if (mods.length) {
+                for (const mod of mods) {
+                    contentText += `  ${mod}\n`;
+                }
             }
         }
     } else if (serverStoped) {
@@ -64,13 +70,17 @@ while (true) {
         if (contentText) {
             contentText += "\n";
         }
-        contentText += randomLogin(joinedMembers);
+        contentText +=
+            joinedMembers.join("と") +
+            pickUpRandomOne(config.loginMessages);
     }
     if (leftMembers.length) {
         if (contentText) {
             contentText += "\n";
         }
-        contentText += randomLogout(leftMembers);
+        contentText +=
+            leftMembers.join("と") +
+            pickUpRandomOne(config.logoutMessages);
     }
     if (contentText) {
         const bodyJson: WebhookContent = {
@@ -85,7 +95,7 @@ while (true) {
         });
     }
     lastSawLine = lines[lines.length - 1];
-    await sleep(1000);
+    await sleep(config.watchInterval ?? 1000);
 }
 
 async function lsFiles(path: string) {
@@ -101,28 +111,6 @@ async function lsFiles(path: string) {
 function pickUpRandomOne<T>(choices: T[]): T {
     const idx = Math.floor(Math.random() * choices.length);
     return choices[idx];
-}
-
-function randomLogin(members: string[]) {
-    const loginMsgs = [
-        "が入ってきました",
-        "が現れた！",
-        "いるじゃん草",
-        "がお邪魔するわよ＾～",
-        "が仲間になりたそうにこちらを見ている"
-    ];
-    return members.join("と") + pickUpRandomOne(loginMsgs);
-}
-
-function randomLogout(members: string[]) {
-    const logoutMsgs = [
-        "が出ていきました",
-        "よ、さらだばー！",
-        "帰ってたが草",
-        "がどっか行っちゃった",
-        "は悲しげに去っていった"
-    ];
-    return members.join("と") + pickUpRandomOne(logoutMsgs);
 }
 
 function sleep(ms: number) {
